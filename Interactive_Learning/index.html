@@ -1,0 +1,329 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="slides-format" content="viewport">
+  <title>Interactive AI Learning Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:wght@500;700;800&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-bg: #f7f4ee;
+      --color-bg-deep: #efe8db;
+      --color-surface: #ffffff;
+      --color-text: #16202f;
+      --color-text-secondary: #42556b;
+      --color-text-muted: #64748b;
+      --color-accent-1: #1d4ed8;
+      --color-accent-2: #0f766e;
+      --color-accent-3: #c2410c;
+      --color-glass-bg: rgba(255,255,255,0.82);
+      --color-glass-border: rgba(15,23,42,0.09);
+      --color-vignette: rgba(15,23,42,0.06);
+      --font-display: 'Literata', serif;
+      --font-body: 'Source Sans 3', sans-serif;
+    }
+  </style>
+  <style>
+    :root { --color-bg: #f7f4ee; --color-text: #16202f; --glow-color-rgb: 29,78,216; --font-body: 'Source Sans 3', sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { background: var(--color-bg); margin: 0; }
+    body { font-family: var(--font-body); color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
+    .deck { width: 100vw; height: 100vh; position: relative; }
+    .slide { position: absolute; inset: 0; background: var(--color-bg); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transform:scale(0.97); transition:opacity .7s ease, transform .7s ease; pointer-events:none; overflow:hidden; }
+    .slide.active { opacity:1; transform:scale(1); pointer-events:all; }
+    .slide>.content { position:relative; z-index:2; width:100%; max-width:1180px; padding:clamp(1.5rem,3vw,3rem); }
+    .nav-controls { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:16px; z-index:100; background:rgba(255,255,255,.82); backdrop-filter:blur(8px); padding:10px 18px; border-radius:40px; border:1px solid rgba(15,23,42,.1); }
+    .nav-btn { width:38px; height:38px; border:none; background:#eff6ff; color:#1d4ed8; border-radius:50%; font-size:1.1rem; cursor:pointer; }
+    .slide-dots { display:flex; gap:8px; }
+    .slide-dots .dot { width:10px; height:10px; border-radius:50%; background:rgba(15,23,42,.14); cursor:pointer; }
+    .slide-dots .dot.active { background:#1d4ed8; transform:scale(1.2); }
+    .slide-counter { font-size:.8rem; color:#64748b; min-width:44px; text-align:center; }
+    .reveal { opacity:0; transform:translateY(18px); }
+    .gradient-mesh { position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+    .blob { position:absolute; border-radius:50%; filter:blur(70px); animation:float 14s ease-in-out infinite; }
+    .blob:nth-child(2){ animation-duration:18s; }
+    .blob:nth-child(3){ animation-duration:22s; }
+    @keyframes float { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-30px) scale(1.08)} }
+    .slide::before { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity:.22; mix-blend-mode:multiply; }
+    .slide::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center, transparent 48%, var(--color-vignette) 100%); }
+    h1,h2,h3 { font-family:'Literata', serif; }
+    .card { background:rgba(255,255,255,.84); border:1px solid rgba(15,23,42,.08); border-radius:24px; box-shadow:0 16px 40px rgba(15,23,42,.08); }
+    .small { font-size:.95rem; line-height:1.35; color:#42556b; }
+    .kpi { font-size:2.2rem; font-weight:800; color:#1d4ed8; }
+    .section-tag { letter-spacing:.18em; text-transform:uppercase; color:#0f766e; font-size:.8rem; font-weight:700; }
+    .shot { width:100%; height:100%; object-fit:cover; border-radius:20px; border:1px solid rgba(15,23,42,.08); box-shadow:0 10px 28px rgba(15,23,42,.12); }
+    .two-col { display:grid; grid-template-columns:1.05fr .95fr; gap:28px; align-items:center; }
+    .three-col { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .agenda { display:grid; grid-template-columns:repeat(2,1fr); gap:18px 22px; }
+    .agenda-item { display:flex; gap:14px; align-items:flex-start; padding:16px 18px; }
+    .badge { width:34px; height:34px; border-radius:999px; background:linear-gradient(135deg,#1d4ed8,#0f766e); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; flex:none; }
+    .timeline { display:grid; gap:14px; position:relative; }
+    .timeline::before { content:''; position:absolute; left:18px; top:8px; bottom:8px; width:2px; background:linear-gradient(#1d4ed8,#0f766e); }
+    .time-item { display:grid; grid-template-columns:36px 180px 1fr; gap:16px; align-items:start; }
+    .dotx { width:14px; height:14px; border-radius:50%; margin-top:7px; margin-left:11px; background:#1d4ed8; box-shadow:0 0 0 5px rgba(29,78,216,.12); }
+    .imgframe { padding:10px; }
+    .quote { border-left:4px solid #c2410c; padding-left:18px; color:#42556b; font-style:italic; }
+    .mini-table { display:grid; grid-template-columns:1.1fr repeat(4,.9fr); gap:2px; background:rgba(15,23,42,.08); border-radius:18px; overflow:hidden; }
+    .mini-table div { background:rgba(255,255,255,.9); padding:12px 10px; font-size:.92rem; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+<div class="slide active" data-slide="1">
+  <div class="gradient-mesh">
+    <div class="blob" style="width:360px;height:360px;top:-90px;right:-70px;background:#93c5fd;opacity:.30"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;left:-50px;background:#99f6e4;opacity:.22"></div>
+    <div class="blob" style="width:220px;height:220px;top:38%;left:16%;background:#fdba74;opacity:.20"></div>
+  </div>
+  <div class="content text-center">
+    <div class="reveal section-tag mb-4">Faculty Pitch</div>
+    <h1 class="reveal text-[clamp(2.4rem,5vw,4.7rem)] font-extrabold leading-tight mb-4">Interactive AI Learning Studio</h1>
+    <p class="reveal text-[1.25rem] text-text-secondary max-w-4xl mx-auto">An academia-first platform for intuitive, visual, and discussion-driven learning across MLPs, optimizers, CNNs, sequence models, and retrieval-augmented generation.</p>
+    <div class="reveal mt-8 grid grid-cols-3 gap-5 max-w-4xl mx-auto">
+      <div class="card p-5"><div class="kpi">5</div><div class="small">core learning labs</div></div>
+      <div class="card p-5"><div class="kpi">No-code</div><div class="small">architecture-first exploration</div></div>
+      <div class="card p-5"><div class="kpi">Discussion</div><div class="small">peer reflection and assignment transfer</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="2">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-80px;right:-60px;background:#bfdbfe;opacity:.18"></div><div class="blob" style="width:220px;height:220px;bottom:-40px;left:-40px;background:#a7f3d0;opacity:.15"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Why now</div>
+    <h2 class="reveal text-4xl font-bold mb-6">The gap in AI pedagogy</h2>
+    <div class="three-col">
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Theory is abstract</h3><p class="small">Students often memorize layers, optimizers, and sequence equations without seeing how architecture choices alter behavior.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Coding hides intuition</h3><p class="small">Beginners spend effort on syntax and debugging before they understand when to use dropout, batch normalization, residual paths, or chunking strategies.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Discussion lacks evidence</h3><p class="small">Classroom comparison becomes stronger when students can defend optimizer choices, dataset setup, and model variants using visual results.</p></div>
+    </div>
+    <p class="reveal quote mt-8 text-lg">The platform shifts learning from “run code first” to “reason about architecture first, then validate with experiments.”</p>
+  </div>
+</div>
+
+<div class="slide" data-slide="3">
+  <div class="gradient-mesh"><div class="blob" style="width:320px;height:320px;top:-60px;right:0;background:#dbeafe;opacity:.2"></div><div class="blob" style="width:180px;height:180px;bottom:0;left:10%;background:#fed7aa;opacity:.2"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Deck flow</div>
+    <h2 class="reveal text-4xl font-bold mb-6">What the platform enables</h2>
+    <div class="agenda">
+      <div class="card agenda-item reveal"><div class="badge">1</div><div><div class="font-bold">MLP Studio</div><div class="small">dataset selection, hidden layers, dropout, batch norm, and train/test diagnostics</div></div></div>
+      <div class="card agenda-item reveal"><div class="badge">2</div><div><div class="font-bold">Optimizer Playground</div><div class="small">convex and non-convex landscapes, GD to Adam family comparisons, saddle-point intuition</div></div></div>
+      <div class="card agenda-item reveal"><div class="badge">3</div><div><div class="font-bold">CNN Vision Lab</div><div class="small">kernel design, feature maps, architecture templates, and digit-level prediction</div></div></div>
+      <div class="card agenda-item reveal"><div class="badge">4</div><div><div class="font-bold">RNN / LSTM / GRU</div><div class="small">sequence length, gating behavior, direct model comparison, and use-case alignment</div></div></div>
+      <div class="card agenda-item reveal"><div class="badge">5</div><div><div class="font-bold">RAG Pipeline Lab</div><div class="small">PDF preprocessing, chunking, embedding selection, and with-vs-without RAG evaluation</div></div></div>
+      <div class="card agenda-item reveal"><div class="badge">6</div><div><div class="font-bold">Pedagogy Layer</div><div class="small">discussion prompts, assignments, transfer to student-defined datasets, and reflective comparison</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="4">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-60px;right:-40px;background:#c7d2fe;opacity:.18"></div><div class="blob" style="width:220px;height:220px;bottom:-40px;left:-20px;background:#a7f3d0;opacity:.12"></div></div>
+  <div class="content two-col">
+    <div>
+      <div class="section-tag reveal mb-2">Lab 1</div>
+      <h2 class="reveal text-4xl font-bold mb-4">MLP Studio: architecture before code</h2>
+      <div class="card p-6 reveal mb-4"><p class="small">Students begin with a binary or multiclass dataset, then toggle hidden layers, neurons, activation functions, dropout, batch normalization, optimizer, learning rate, batch size, and epochs.</p></div>
+      <div class="card p-6 reveal mb-4"><p class="small">The interface is built to help learners see how capacity, regularization, and optimization affect convergence, accuracy, generalization, and representation quality.</p></div>
+      <div class="card p-6 reveal"><p class="small">The pedagogical objective is explicit: learners should explain why a given MLP design works for a task before writing any implementation.</p></div>
+    </div>
+    <div class="card imgframe reveal"><img class="shot" src="MLP.png" alt="MLP visualizer interface"></div>
+  </div>
+</div>
+
+<div class="slide" data-slide="5">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-40px;right:-30px;background:#bfdbfe;opacity:.14"></div><div class="blob" style="width:240px;height:240px;bottom:-70px;left:-30px;background:#fdba74;opacity:.14"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">MLP evidence</div>
+    <h2 class="reveal text-4xl font-bold mb-6">What students see and reason about</h2>
+    <div class="three-col mb-6">
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Performance traces</h3><p class="small">Train and validation accuracy/loss reveal underfitting, overfitting, and unstable training dynamics.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Representation plots</h3><p class="small">Feature views after dimensionality reduction help students connect learned spaces to class separability.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Regularization effects</h3><p class="small">Dropout and batch normalization become visible learning mechanisms rather than textbook definitions.</p></div>
+    </div>
+    <div class="mini-table reveal">
+      <div class="font-bold">Learner action</div><div class="font-bold">Layers</div><div class="font-bold">Dropout</div><div class="font-bold">BatchNorm</div><div class="font-bold">Outcome</div>
+      <div>Increase capacity</div><div>More hidden blocks</div><div>Optional</div><div>Optional</div><div>Higher fit, possible overfitting</div>
+      <div>Stabilize training</div><div>Moderate depth</div><div>Low</div><div>On</div><div>Smoother convergence</div>
+      <div>Improve generalization</div><div>Task-specific</div><div>Moderate</div><div>On/Off compare</div><div>Better validation behavior</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="6">
+  <div class="gradient-mesh"><div class="blob" style="width:260px;height:260px;top:-50px;right:-30px;background:#ddd6fe;opacity:.17"></div><div class="blob" style="width:250px;height:250px;bottom:-50px;left:-30px;background:#bfdbfe;opacity:.12"></div></div>
+  <div class="content two-col">
+    <div class="card imgframe reveal"><img class="shot" src="Optimizers.png" alt="Optimizer visualization interface"></div>
+    <div>
+      <div class="section-tag reveal mb-2">Lab 2</div>
+      <h2 class="reveal text-4xl font-bold mb-4">Optimizer Playground: make geometry intuitive</h2>
+      <div class="card p-6 reveal mb-4"><p class="small">Students compare GD, SGD, momentum, RMSProp, Adam, and related methods on convex and non-convex objective surfaces.</p></div>
+      <div class="card p-6 reveal mb-4"><p class="small">The visual focus is not only speed, but also trajectory: local minima, global minima, maxima, plateaus, and saddle regions.</p></div>
+      <div class="card p-6 reveal"><p class="small">This creates a shared language for classroom discussion around step size, noise, curvature, and convergence behavior.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="7">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-40px;right:-30px;background:#dbeafe;opacity:.16"></div><div class="blob" style="width:200px;height:200px;bottom:-20px;left:8%;background:#a7f3d0;opacity:.16"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Optimization outcomes</div>
+    <h2 class="reveal text-4xl font-bold mb-6">From formula memorization to experimental comparison</h2>
+    <div class="three-col">
+      <div class="card p-6 reveal"><div class="font-bold mb-2">Conceptual goal</div><p class="small">Understand why optimizer choice depends on geometry, stochasticity, and learning-rate sensitivity.</p></div>
+      <div class="card p-6 reveal"><div class="font-bold mb-2">Interactive task</div><p class="small">Launch multiple optimizers on the same surface and compare paths, speed, oscillation, and final basin.</p></div>
+      <div class="card p-6 reveal"><div class="font-bold mb-2">Discussion prompt</div><p class="small">Which optimizer is robust, which is fast, and which one fails on sharp or deceptive landscapes?</p></div>
+    </div>
+    <div class="timeline mt-8">
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Step 1</div><div class="small">Select topology: convex bowl, rugged terrain, or multi-peak non-convex surface.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Step 2</div><div class="small">Choose optimizer set and tune learning rate or step size.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Step 3</div><div class="small">Observe trajectories and compare convergence to critical points.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="8">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-40px;right:-40px;background:#bfdbfe;opacity:.16"></div><div class="blob" style="width:220px;height:220px;bottom:-60px;left:-20px;background:#99f6e4;opacity:.16"></div></div>
+  <div class="content two-col">
+    <div>
+      <div class="section-tag reveal mb-2">Lab 3</div>
+      <h2 class="reveal text-4xl font-bold mb-4">CNN Vision Lab: from kernels to feature maps</h2>
+      <div class="card p-6 reveal mb-4"><p class="small">Students build convolutional networks with editable kernels, padding, stride, pooling, dense layers, and dropout.</p></div>
+      <div class="card p-6 reveal mb-4"><p class="small">Template pathways can expose canonical variants such as simple CNN, deep CNN, VGG-style, ResNet-style, or mobile-efficient designs.</p></div>
+      <div class="card p-6 reveal"><p class="small">A digit-level workflow using MNIST makes the full path concrete: image input, convolution, feature extraction, flattening, dense prediction, and softmax output.</p></div>
+    </div>
+    <div class="card imgframe reveal"><img class="shot" src="CNN.png" alt="CNN vision lab interface"></div>
+  </div>
+</div>
+
+<div class="slide" data-slide="9">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-20px;background:#dbeafe;opacity:.16"></div><div class="blob" style="width:220px;height:220px;bottom:-40px;left:-20px;background:#fdba74;opacity:.12"></div></div>
+  <div class="content two-col">
+    <div class="card imgframe reveal"><img class="shot" src="RNN.png" alt="RNN LSTM GRU comparison interface"></div>
+    <div>
+      <div class="section-tag reveal mb-2">Lab 4</div>
+      <h2 class="reveal text-4xl font-bold mb-4">Sequence Lab: RNN, LSTM, and GRU side by side</h2>
+      <div class="card p-6 reveal mb-4"><p class="small">Students select sequence tasks such as fraud detection, load forecasting, sentiment analysis, or entity recognition, then compare recurrent variants directly.</p></div>
+      <div class="card p-6 reveal mb-4"><p class="small">Hidden size, sequence length, learning rate, epochs, and gate ablations allow learners to connect architecture design with task demands.</p></div>
+      <div class="card p-6 reveal"><p class="small">The side-by-side view supports explanation of vanishing gradients, gating, memory retention, and computational trade-offs.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="10">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;right:-40px;background:#c7d2fe;opacity:.16"></div><div class="blob" style="width:220px;height:220px;bottom:-40px;left:-20px;background:#a7f3d0;opacity:.14"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Lab 5</div>
+    <h2 class="reveal text-4xl font-bold mb-6">RAG Lab: retrieval made visible end to end</h2>
+    <div class="grid grid-cols-2 gap-6">
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Pipeline construction</h3><p class="small">Learners preprocess PDFs with PyMuPDF, chunk with alternate strategies, embed chunks with different models, and query an open-source LLM.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Comparative learning</h3><p class="small">The system contrasts plain LLM responses with RAG-grounded responses so students can judge factuality, relevance, and source traceability.</p></div>
+      <div class="card imgframe reveal"><img class="shot" src="RAG_LLM.png" alt="RAG answer comparison interface"></div>
+      <div class="card imgframe reveal"><img class="shot" src="RAG_embedding.png" alt="RAG embedding visualization interface"></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="11">
+  <div class="gradient-mesh"><div class="blob" style="width:290px;height:290px;top:-50px;right:-40px;background:#bfdbfe;opacity:.15"></div><div class="blob" style="width:180px;height:180px;bottom:-30px;left:10%;background:#fed7aa;opacity:.16"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Pedagogy design</div>
+    <h2 class="reveal text-4xl font-bold mb-6">Each lab connects exploration, discussion, and assignment</h2>
+    <div class="timeline">
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Explore visually</div><div class="small">Students change architecture and hyperparameters without touching implementation details at first exposure.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Discuss choices</div><div class="small">Peers compare settings, justify trade-offs, and explain why a configuration helped or failed on a dataset.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Transfer to practice</div><div class="small">Assignments require applying the same ideas to a new dataset or use case selected by the learner.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Reflect with evidence</div><div class="small">Plots, trajectories, feature maps, and retrieved chunks become artifacts for graded explanation and peer feedback.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="12">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-50px;right:-30px;background:#dbeafe;opacity:.15"></div><div class="blob" style="width:220px;height:220px;bottom:-50px;left:-30px;background:#a7f3d0;opacity:.13"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Academic value</div>
+    <h2 class="reveal text-4xl font-bold mb-6">Why this fits an academic program</h2>
+    <div class="three-col">
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Curricular alignment</h3><p class="small">Supports machine learning, deep learning, NLP, information retrieval, and AI systems courses through reusable modular labs.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Research-readiness</h3><p class="small">Students learn to compare architectures systematically, report evidence, and connect model choices to hypotheses.</p></div>
+      <div class="card p-6 reveal"><h3 class="text-xl font-bold mb-2">Inclusive learning</h3><p class="small">A visual-first workflow lowers early barriers for students who need conceptual grounding before full-code experimentation.</p></div>
+    </div>
+    <div class="card p-6 mt-6 reveal"><p class="small">The platform can support flipped classrooms, guided labs, discussion sections, project-based courses, and capstone scaffolding with a single consistent interaction language.</p></div>
+  </div>
+</div>
+
+<div class="slide" data-slide="13">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-40px;right:-20px;background:#c7d2fe;opacity:.16"></div><div class="blob" style="width:240px;height:240px;bottom:-60px;left:-20px;background:#fdba74;opacity:.12"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Evaluation</div>
+    <h2 class="reveal text-4xl font-bold mb-6">Suggested assessment model</h2>
+    <div class="mini-table reveal">
+      <div class="font-bold">Assessment</div><div class="font-bold">Focus</div><div class="font-bold">Evidence</div><div class="font-bold">Skill</div><div class="font-bold">Outcome</div>
+      <div>In-class lab</div><div>configuration choice</div><div>plots and visual traces</div><div>reasoning</div><div>concept mastery</div>
+      <div>Discussion post</div><div>comparison across peers</div><div>trade-off explanation</div><div>critical analysis</div><div>reflective learning</div>
+      <div>Assignment</div><div>new dataset transfer</div><div>chosen settings + results</div><div>applied design</div><div>independent competence</div>
+    </div>
+    <div class="grid grid-cols-3 gap-5 mt-6">
+      <div class="card p-5 reveal"><div class="font-bold">Rubric 1</div><div class="small">Can the student justify architecture choice?</div></div>
+      <div class="card p-5 reveal"><div class="font-bold">Rubric 2</div><div class="small">Can the student interpret model behavior visually?</div></div>
+      <div class="card p-5 reveal"><div class="font-bold">Rubric 3</div><div class="small">Can the student transfer the insight to a new task?</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="14">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-60px;right:-20px;background:#bfdbfe;opacity:.16"></div><div class="blob" style="width:220px;height:220px;bottom:-50px;left:-20px;background:#99f6e4;opacity:.14"></div></div>
+  <div class="content">
+    <div class="section-tag reveal mb-2">Implementation path</div>
+    <h2 class="reveal text-4xl font-bold mb-6">How this can be adopted in a faculty setting</h2>
+    <div class="timeline">
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Phase 1: pilot</div><div class="small">Deploy selected labs in one ML or deep learning course as guided modules.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Phase 2: integration</div><div class="small">Map labs to weekly topics, embed discussion prompts, and align assignment rubrics.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Phase 3: expansion</div><div class="small">Extend to CNN, sequential models, and RAG-driven courses or interdisciplinary AI programs.</div></div>
+      <div class="time-item reveal"><div class="dotx"></div><div class="font-bold">Phase 4: scholarship</div><div class="small">Study learning gains, engagement, and conceptual transfer for publication-ready education research.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="15">
+  <div class="gradient-mesh">
+    <div class="blob" style="width:360px;height:360px;top:-80px;right:-60px;background:#93c5fd;opacity:.26"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-40px;left:-40px;background:#99f6e4;opacity:.20"></div>
+    <div class="blob" style="width:220px;height:220px;top:40%;left:14%;background:#fdba74;opacity:.18"></div>
+  </div>
+  <div class="content text-center">
+    <div class="section-tag reveal mb-4">Closing</div>
+    <h2 class="reveal text-[clamp(2.2rem,4.8vw,4.3rem)] font-bold mb-4">Teach models as systems students can see, compare, and defend</h2>
+    <p class="reveal text-[1.2rem] text-text-secondary max-w-4xl mx-auto">This platform positions AI education as interactive scientific reasoning: build intuitions first, validate experimentally, discuss evidence, and transfer learning to authentic problems.</p>
+    <div class="reveal mt-10 card p-6 max-w-3xl mx-auto"><div class="text-xl font-bold mb-2">Faculty value proposition</div><div class="small">A reusable visual lab ecosystem for modern AI curricula, with strong potential for engagement, deeper conceptual understanding, and education-research impact.</div></div>
+  </div>
+</div>
+
+</div>
+<div class="nav-controls">
+  <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+  <span class="slide-counter" id="counter">1 / 15</span>
+</div>
+<script>
+let current = 1;
+const total = document.querySelectorAll('.slide').length;
+const dotsContainer = document.getElementById('dots');
+const counter = document.getElementById('counter');
+for (let i = 1; i <= total; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i===1 ? ' active' : ''); dot.onclick = () => goToSlide(i); dotsContainer.appendChild(dot); }
+function goToSlide(n){ const prev=document.querySelector('.slide.active'); const next=document.querySelector(`.slide[data-slide="${n}"]`); if(prev) prev.classList.remove('active'); if(next){ next.classList.add('active'); animateSlide(next);} current=n; updateNav(); }
+function changeSlide(dir){ let next=current+dir; if(next<1) next=total; if(next>total) next=1; goToSlide(next); }
+function updateNav(){ document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active', i+1===current)); counter.textContent = current + ' / ' + total; }
+document.addEventListener('keydown',(e)=>{ if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); changeSlide(1);} if(e.key==='ArrowLeft'){ e.preventDefault(); changeSlide(-1);} });
+let touchStartX=0; document.addEventListener('touchstart',(e)=>{ touchStartX=e.touches[0].clientX; }); document.addEventListener('touchend',(e)=>{ const diff=touchStartX-e.changedTouches[0].clientX; if(Math.abs(diff)>50) changeSlide(diff>0?1:-1); });
+function animateSlide(slide){ slide.querySelectorAll('.reveal').forEach((el,i)=>{ el.style.transition='none'; el.style.opacity='0'; el.style.transform='translateY(18px)'; el.offsetHeight; const delay=i*0.08; el.style.transition=`opacity 0.35s ease ${delay}s, transform 0.35s ease ${delay}s`; el.style.opacity='1'; el.style.transform='translateY(0)'; }); }
+try { animateSlide(document.querySelector('.slide.active')); } catch(e) {}
+</script>
+</body>
+</html> -->
